@@ -1,0 +1,26 @@
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_REF_NAME == "develop"'
+      when: always
+      variables:
+        ENVIRONMENT_URL: https://api.simfigirator.webcentriq.com
+        TARGET_HOST: docker-server-1
+        TARGET_POSTGRES_HOST: db-server-1
+    - when: never
+
+include:
+  - project: 'webcentriq-next/felixin'
+    ref: v0.0.10
+    file: '/ci/backend/with-docker.gitlab-ci.yml'
+    inputs:
+      project_name: simfigirator-backend
+      sonar_scan_branch: develop
+      services: "postgres"
+  - project: 'webcentriq-next/felixin'
+    ref: v0.0.10
+    file: '/ci/exclusive/django.gitlab-ci.yml'
+    inputs:
+      project_name: simfigirator-backend

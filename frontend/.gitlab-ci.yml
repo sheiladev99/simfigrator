@@ -1,0 +1,21 @@
+variables:
+  NODE_VERSION: 20
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_REF_NAME == "develop"'
+      when: always
+      variables:
+        ENVIRONMENT_URL: https://simfigirator.webcentriq.com
+        TARGET_HOST: docker-server-1
+    - when: never
+
+include:
+  - project: 'webcentriq-next/felixin'
+    ref: v0.0.10
+    file: '/ci/frontend/ssr.gitlab-ci.yml'
+    inputs:
+        sonar_scan_branch: develop
+        project_name: simfigirator-fe
